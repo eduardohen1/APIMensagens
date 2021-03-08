@@ -1,0 +1,71 @@
+CREATE SCHEMA chaht2
+    AUTHORIZATION qajskbadknnrvf; -- usuário!
+
+-- sequencias para autoincrement:
+CREATE SEQUENCE chat.messages_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 0
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE chat.messages_seq
+    OWNER TO qajskbadknnrvf;
+	
+
+CREATE SEQUENCE chat.users_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 0
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE chat.users_seq
+    OWNER TO qajskbadknnrvf;
+
+-- Tabela users:
+
+CREATE TABLE chat.users
+(
+    id integer NOT NULL DEFAULT nextval('chat.users_seq'::regclass),
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    email character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    gcmtoken text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT users_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE chat.users
+    OWNER to qajskbadknnrvf;
+	
+
+-- Tabela messages:
+	
+CREATE TABLE chat.messages
+(
+    id integer NOT NULL DEFAULT nextval('chat.messages_seq'::regclass),
+    message character varying COLLATE pg_catalog."default" NOT NULL,
+    users_id integer NOT NULL,
+    sentat timestamp with time zone,
+    CONSTRAINT messages_pkey PRIMARY KEY (id),
+    CONSTRAINT message_usres FOREIGN KEY (users_id)
+        REFERENCES chat.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE chat.messages
+    OWNER to qajskbadknnrvf;
+-- Index: fki_message_usres
+
+-- DROP INDEX chat.fki_message_usres;
+
+CREATE INDEX fki_message_usres
+    ON chat.messages USING btree
+    (users_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+	
