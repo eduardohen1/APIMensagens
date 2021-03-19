@@ -42,6 +42,19 @@ public class ChatService {
             return false;
     }
 
+    public boolean isUserExistsId(Integer id){
+        try{
+            Optional<Users> users = usersRepository.findById(id);
+            if(users.get().getId() != null)
+                return true;
+            else
+                return false;
+        }catch (Exception ex){
+            return  false;
+        }
+
+    }
+
     @Transactional
     public int createUser(Users obj){
         if(!isUserExists(obj.getEmail())) {
@@ -82,6 +95,12 @@ public class ChatService {
             return true;
         else
             return false;
+    }
+
+    public List<Users> getUsers(){
+        List<Users> users = new ArrayList<>();
+        users = usersRepository.findAll();
+        return users;
     }
 
     public List<MensagensDTO> getMessages(){

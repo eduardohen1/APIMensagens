@@ -77,8 +77,14 @@ public class ChatResource {
 
     @RequestMapping(value = "/enviar", method = RequestMethod.POST)
     public ResponseEntity<Void> enviar(@RequestBody MensagemEnvioDTO obj){
-        if(service.addMessage(obj.getId(), obj.getMensagem())){
-            return ResponseEntity.ok().build();
+        Boolean userExists = service.isUserExistsId(obj.getId());
+
+        if(userExists){
+            if(service.addMessage(obj.getId(), obj.getMensagem())){
+                return ResponseEntity.ok().build();
+            }else{
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -87,6 +93,13 @@ public class ChatResource {
     @RequestMapping(value = "/mensagens", method = RequestMethod.GET)
     public ResponseEntity<List<MensagensDTO>> mensagens(){
         List<MensagensDTO> list = service.getMessages();
+        return ResponseEntity.ok().body(list);
+    }
+
+    @ApiOperation(value = "Listagem de contatos")
+    @RequestMapping(value = "/contatos", method = RequestMethod.GET)
+    public ResponseEntity<List<Users>> usuarios(){
+        List<Users> list = service.getUsers();
         return ResponseEntity.ok().body(list);
     }
 
